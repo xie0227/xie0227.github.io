@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/xie0227.github.io/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/xie0227.github.io/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/xie0227.github.io/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/xie0227.github.io/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/xie0227.github.io/css/main.css">
+
+
+<link rel="stylesheet" href="/xie0227.github.io/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"xie0227.github.io","root":"/xie0227.github.io/","scheme":"Gemini","version":"7.7.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="链表创建的两种方法引言​    首先讲述了我自己在动态实现数据结构的时候遇到的大坑结构体指针问题，随后就是头插法和尾插法的介绍。 结构体指针引言​    首先需要讲述的是一个让我改了一天半的bug。实际上半天的时候就已经发现了二级指针的问题，但是并没有深究，以为是自己对指针运用不够熟练，就略微重温了一下指针的比较浅层的相关内容，然后第二天的两个程序链栈和链队列都出现了段错误和垃圾值问题，改了半天才">
+<meta property="og:type" content="article">
+<meta property="og:title" content="链表的两种创建方式和指针">
+<meta property="og:url" content="https://xie0227.github.io/xie0227.github.io/2020/03/11/%E9%93%BE%E8%A1%A8%E7%9A%84%E4%B8%A4%E7%A7%8D%E5%88%9B%E5%BB%BA%E6%96%B9%E5%BC%8F%E5%92%8C%E6%8C%87%E9%92%88%E5%A4%A7%E5%9D%91/index.html">
+<meta property="og:site_name" content="小谢的博客">
+<meta property="og:description" content="链表创建的两种方法引言​    首先讲述了我自己在动态实现数据结构的时候遇到的大坑结构体指针问题，随后就是头插法和尾插法的介绍。 结构体指针引言​    首先需要讲述的是一个让我改了一天半的bug。实际上半天的时候就已经发现了二级指针的问题，但是并没有深究，以为是自己对指针运用不够熟练，就略微重温了一下指针的比较浅层的相关内容，然后第二天的两个程序链栈和链队列都出现了段错误和垃圾值问题，改了半天才">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="c:%5CUsers%5Cxie%5CPictures%5CTIM%E5%9B%BE%E7%89%8720200311153532.png">
+<meta property="og:image" content="c:%5CUsers%5Cxie%5CPictures%5CTIM%E5%9B%BE%E7%89%8720200311153354.png">
+<meta property="og:image" content="c:%5CUsers%5Cxie%5CPictures%5CTIM%E5%9B%BE%E7%89%8720200311160338.png">
+<meta property="og:image" content="c:%5CUsers%5Cxie%5CPictures%5CTIM%E5%9B%BE%E7%89%8720200311163828.png">
+<meta property="og:image" content="c:%5CUsers%5Cxie%5CPictures%5CTIM%E6%88%AA%E5%9B%BE20200311165751.png">
+<meta property="og:image" content="c:%5CUsers%5Cxie%5CPictures%5CTIM%E5%9B%BE%E7%89%8720200311170403.png">
+<meta property="article:published_time" content="2020-03-11T06:45:36.000Z">
+<meta property="article:modified_time" content="2020-03-11T09:53:14.046Z">
+<meta property="article:author" content="Coding Xie">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="c:%5CUsers%5Cxie%5CPictures%5CTIM%E5%9B%BE%E7%89%8720200311153532.png">
+
+<link rel="canonical" href="https://xie0227.github.io/xie0227.github.io/2020/03/11/%E9%93%BE%E8%A1%A8%E7%9A%84%E4%B8%A4%E7%A7%8D%E5%88%9B%E5%BB%BA%E6%96%B9%E5%BC%8F%E5%92%8C%E6%8C%87%E9%92%88%E5%A4%A7%E5%9D%91/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>链表的两种创建方式和指针 | 小谢的博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <div>
+      <a href="/xie0227.github.io/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">小谢的博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">keep learnging and never give up,I will see you at a higher level</p>
+  </div>
+
+  <div class="site-nav-right"></div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/xie0227.github.io/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/xie0227.github.io/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/xie0227.github.io/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签<span class="badge">0</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/xie0227.github.io/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类<span class="badge">0</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/xie0227.github.io/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档<span class="badge">1</span></a>
+
+  </li>
+        <li class="menu-item menu-item-schedule">
+
+    <a href="/xie0227.github.io/schedule/" rel="section"><i class="fa fa-fw fa-calendar"></i>日程表</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://xie0227.github.io/xie0227.github.io/2020/03/11/%E9%93%BE%E8%A1%A8%E7%9A%84%E4%B8%A4%E7%A7%8D%E5%88%9B%E5%BB%BA%E6%96%B9%E5%BC%8F%E5%92%8C%E6%8C%87%E9%92%88%E5%A4%A7%E5%9D%91/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/xie0227.github.io/images/avatar.gif">
+      <meta itemprop="name" content="Coding Xie">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="小谢的博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          链表的两种创建方式和指针
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2020-03-11 14:45:36 / 修改时间：17:53:14" itemprop="dateCreated datePublished" datetime="2020-03-11T14:45:36+08:00">2020-03-11</time>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>4.3k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>4 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="链表创建的两种方法"><a href="#链表创建的两种方法" class="headerlink" title="链表创建的两种方法"></a>链表创建的两种方法</h1><h2 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h2><p>​    首先讲述了我自己在动态实现数据结构的时候遇到的大坑<strong>结构体指针问题</strong>，随后就是头插法和尾插法的介绍。</p>
+<h2 id="结构体指针"><a href="#结构体指针" class="headerlink" title="结构体指针"></a>结构体指针</h2><h3 id="引言-1"><a href="#引言-1" class="headerlink" title="引言"></a>引言</h3><p>​    首先需要讲述的是一个让我改了一天半的bug。实际上半天的时候就已经发现了二级指针的问题，但是并没有深究，以为是自己对指针运用不够熟练，就略微重温了一下指针的比较浅层的相关内容，然后第二天的两个程序<strong>链栈和链队列</strong>都出现了<strong>段错误</strong>和<strong>垃圾值</strong>问题，改了半天才发现不仅仅是二级指针的问题，主要其实是<strong>结构体指针</strong>的问题。在此，对这个坑进行记录，补充知识，以防再犯错。</p>
+<h3 id="正文"><a href="#正文" class="headerlink" title="正文"></a>正文</h3><p>​    结构体指针在常见的基础数据结构如：动态数组、链表、栈、队列、树、图中都是很常见的。</p>
+<p>​    关于结构体指针也很简单，就是一个指针，它所指向的类型是结构体类型，通过该指针可以访问结构体变量的内部成员如(*p).age访问结构体变量的age成员，其中 *p=结构体变量。</p>
+<p>​    我们通常通过这种方法在主函数与其他函数之间进行<strong>传址操作</strong>。通过<strong>结构体指针</strong>改变<strong>结构体变量成员的值</strong>，但是有时候并不会注意到它<strong>并不能改变结构体变量本身的值</strong>，这种错误常发生在动态分配内存上。拿链栈举例，我们试图创建一个链栈，对指向栈顶的指针的初始化的init函数中，我们需要对指向栈顶指针分配内存，此时我们可能会传入在主函数里定义好的头指针。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">init_</span><span class="params">(Stacklink front)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    front = (Stacklink)<span class="built_in">malloc</span>(<span class="keyword">sizeof</span>(StackNode));</span><br><span class="line">    front-&gt;pNext = <span class="literal">NULL</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>​    看似没有任何错误，实际上这样并不能改变改变front的地址，我们想要改变front值应该通过传指针的指针，即二级指针。下面是一个简单例子来证明。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;malloc.h&gt;</span></span></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">student</span>&#123;</span></span><br><span class="line">    <span class="keyword">int</span> age;</span><br><span class="line">    <span class="keyword">int</span> num;</span><br><span class="line">&#125; stu, *p_stu;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">change</span><span class="params">(p_stu ps)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    ps = (p_stu)<span class="built_in">malloc</span>(<span class="keyword">sizeof</span>(stu));</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"address in change(),the value of ps:%p\n"</span>, ps);</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    p_stu ps = <span class="literal">NULL</span>;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"address in main(),before changing the value of ps:%p\n"</span>, ps);</span><br><span class="line">    change(ps);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"address in main(),after changing the value of ps:%p\n"</span>, ps);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="C:%5CUsers%5Cxie%5CPictures%5CTIM%E5%9B%BE%E7%89%8720200311153532.png" alt="TIM图片20200311153532"></p>
+<p>而通过<strong>传结构体指针的指针</strong>得到下面结果</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;malloc.h&gt;</span></span></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">student</span>&#123;</span></span><br><span class="line">    <span class="keyword">int</span> age;</span><br><span class="line">    <span class="keyword">int</span> num;</span><br><span class="line">&#125; stu, *p_stu;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">change</span><span class="params">(p_stu* pps)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    *pps = (p_stu)<span class="built_in">malloc</span>(<span class="keyword">sizeof</span>(stu));</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"address in change(),the value of ps:%p\n"</span>, pps);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"address in change(),the value of ps:%p\n"</span>, *pps);</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    p_stu ps = <span class="literal">NULL</span>;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"address in main(),the value of ps:%p\n"</span>, ps);</span><br><span class="line">    change(&amp;ps);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"address in main(),after changing the value of ps:%p\n"</span>, ps);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="C:%5CUsers%5Cxie%5CPictures%5CTIM%E5%9B%BE%E7%89%8720200311153354.png" alt="TIM图片20200311153354"></p>
+<p>可以发现传入二级指针，成功实现了对结构体指针变量的地址分配。</p>
+<p>所以如果想改变<strong>结构体指针的地址</strong>应该传入<strong>二级指针-&gt;结构体指针的指针</strong>。</p>
+<h2 id="头插法"><a href="#头插法" class="headerlink" title="头插法"></a>头插法</h2><p>​    依据上面说到的<strong>结构体指针问题</strong>，为了增加可读性，这里创建链表都用返回值来实现而不是二级指针    </p>
+<p>​    头插法:顾名思义，在头节点后面插入新的节点，每个新产生的节点都会被接在头节点后面。</p>
+<p>​    接下来给出关于头插法的图例解释。</p>
+<p><img src="C:%5CUsers%5Cxie%5CPictures%5CTIM%E5%9B%BE%E7%89%8720200311160338.png" alt="TIM图片20200311160338"></p>
+<p>代码中关键的步骤在图中给出了,如果能理解,头插法创建链表就很简单了</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;malloc.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdbool.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;windows.h&gt;</span></span></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">NODE</span>&#123;</span></span><br><span class="line">    <span class="keyword">int</span> data;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">NODE</span>* <span class="title">pNext</span>;</span></span><br><span class="line">&#125;node;          <span class="comment">//定义链表节点的类型</span></span><br><span class="line"><span class="function">node* <span class="title">create_node</span><span class="params">(<span class="keyword">int</span> <span class="built_in">size</span>)</span></span>;         <span class="comment">//创建链表</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">print_node</span><span class="params">(node* pHead)</span></span>;      <span class="comment">//打印链表</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    node *pHead;</span><br><span class="line">    <span class="keyword">int</span> length;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"please put the length of list:"</span>);</span><br><span class="line">    <span class="built_in">scanf</span>(<span class="string">"%d"</span>, &amp;length);</span><br><span class="line">    pHead = create_node(length);</span><br><span class="line">    print_node(pHead);</span><br><span class="line">&#125;</span><br><span class="line"><span class="function">node* <span class="title">create_node</span><span class="params">(<span class="keyword">int</span> <span class="built_in">size</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> i,val;</span><br><span class="line">    node *phead = (node *)<span class="built_in">malloc</span>(<span class="keyword">sizeof</span>(node));  <span class="comment">//创建头节点的“分身”,利用“分身”创建一个链表之后返回分身地址,pHead就构成了一个链表的头节点</span></span><br><span class="line">    phead-&gt;pNext = <span class="literal">NULL</span>;                        <span class="comment">//要记得置NULL,一开始写的时候忘记了,导致出现了段错误</span></span><br><span class="line">    <span class="keyword">for</span> (i = <span class="number">0</span>;i&lt;<span class="built_in">size</span>; i++)                            <span class="comment">//根据输入的length创建新节点</span></span><br><span class="line">        &#123;</span><br><span class="line">            node *pNew = (node *)<span class="built_in">malloc</span>(<span class="keyword">sizeof</span>(node));</span><br><span class="line">            <span class="built_in">scanf</span>(<span class="string">"%d"</span>, &amp;val);</span><br><span class="line">            pNew-&gt;data = val;</span><br><span class="line">            pNew-&gt;pNext = phead-&gt;pNext;                <span class="comment">//先让新节点指针指向头节点后继节点</span></span><br><span class="line">            phead-&gt;pNext = pNew;                       <span class="comment">//再让头节点指向新节点</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> phead;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">print_node</span><span class="params">(node *pHead)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"It's the time to print node.\n"</span>);</span><br><span class="line">    node *q = pHead-&gt;pNext;</span><br><span class="line">    <span class="keyword">while</span> (q != <span class="literal">NULL</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"%d\n"</span>, q-&gt;data);</span><br><span class="line">        q = q-&gt;pNext;</span><br><span class="line">    &#125;</span><br><span class="line">    q = <span class="literal">NULL</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="C:%5CUsers%5Cxie%5CPictures%5CTIM%E5%9B%BE%E7%89%8720200311163828.png" alt="TIM图片20200311163828"></p>
+<p>​    可以注意到,这里输出的序列是输入序列的逆序,原因是因为从头指针开始遍历,而每次插在头节点后面的结点是最后创建的结点，符合<strong>先进后出</strong>，由此我们可以想到<strong>链栈</strong>应该是用<strong>头插法</strong>创建链表了。</p>
+<p>​    同时写这段代码的时候，又开始犯创建之后指针不初始化的错误了，导致尾节点的指针域是个<strong>野指针</strong>，循环无法结束。关于指针的错误真的是很常见而且很难找，所以建议大家都建立指针之后先根据要求置NULL，再进行操作。</p>
+<h2 id="尾插法"><a href="#尾插法" class="headerlink" title="尾插法"></a>尾插法</h2><p>尾插法：每个新节点都插在表尾，因此叫做尾插法。</p>
+<p><img src="C:%5CUsers%5Cxie%5CPictures%5CTIM%E6%88%AA%E5%9B%BE20200311165751.png" alt="TIM截图20200311165751"></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;malloc.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdbool.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;windows.h&gt;</span></span></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">NODE</span>&#123;</span></span><br><span class="line">    <span class="keyword">int</span> data;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">NODE</span>* <span class="title">pNext</span>;</span></span><br><span class="line">&#125;node;          <span class="comment">//定义链表节点的类型</span></span><br><span class="line"><span class="function">node* <span class="title">create_node</span><span class="params">(<span class="keyword">int</span> <span class="built_in">size</span>)</span></span>;         <span class="comment">//创建链表</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">print_node</span><span class="params">(node* pHead)</span></span>;      <span class="comment">//打印链表</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    node *pHead;</span><br><span class="line">    <span class="keyword">int</span> length;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"please put the length of list:"</span>);</span><br><span class="line">    <span class="built_in">scanf</span>(<span class="string">"%d"</span>, &amp;length);</span><br><span class="line">    pHead = create_node(length);</span><br><span class="line">    print_node(pHead);</span><br><span class="line">&#125;</span><br><span class="line"><span class="function">node* <span class="title">create_node</span><span class="params">(<span class="keyword">int</span> <span class="built_in">size</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> i,val;</span><br><span class="line">    node *phead = (node *)<span class="built_in">malloc</span>(<span class="keyword">sizeof</span>(node));  <span class="comment">//创建头节点的“分身”,利用“分身”创建一个链表之后返回分身地址,pHead就构成了一个链表的头节点</span></span><br><span class="line">    phead-&gt;pNext = <span class="literal">NULL</span>;                        </span><br><span class="line">    node *p = phead;</span><br><span class="line">    <span class="keyword">for</span> (i = <span class="number">0</span>;i&lt;<span class="built_in">size</span>; i++)                            <span class="comment">//根据输入的length创建新节点</span></span><br><span class="line">        &#123;</span><br><span class="line">            node *pNew = (node *)<span class="built_in">malloc</span>(<span class="keyword">sizeof</span>(node));</span><br><span class="line">            <span class="built_in">scanf</span>(<span class="string">"%d"</span>, &amp;val);</span><br><span class="line">            pNew-&gt;data = val;</span><br><span class="line">            p-&gt;pNext = pNew;                           <span class="comment">//先让新节点指针指向头节点后继节点</span></span><br><span class="line">            p = pNew;                       <span class="comment">//再让头节点指向新节点</span></span><br><span class="line">        &#125;</span><br><span class="line">        p-&gt;pNext = <span class="literal">NULL</span>;<span class="comment">//尾节点要置NULL否则野指针循环无法结束</span></span><br><span class="line">        <span class="keyword">return</span> phead;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">print_node</span><span class="params">(node *pHead)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"It's the time to print node.\n"</span>);</span><br><span class="line">    node *q = pHead-&gt;pNext;</span><br><span class="line">    <span class="keyword">while</span> (q != <span class="literal">NULL</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"%d\n"</span>, q-&gt;data);</span><br><span class="line">        q = q-&gt;pNext;</span><br><span class="line">    &#125;</span><br><span class="line">    q = <span class="literal">NULL</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>​    <img src="C:%5CUsers%5Cxie%5CPictures%5CTIM%E5%9B%BE%E7%89%8720200311170403.png" alt="TIM图片20200311170403"></p>
+<p>​    可以发现这里的链表输出是正序的，符合<strong>先进先出</strong>，可以用来构造链式队列。</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>1.头插法是利用头节点的指针域始终指向头节点的后继节点的特点，来对新插入的节点完成前驱后继节点的设置，链表内数据顺序是与输入顺序逆序的。</p>
+<p>2.尾插法是头节点二号分身来控制新节点的插入位置，链表内数据顺序是正序的。</p>
+<p>3.依据尾插法，当我们需要对整个链表进行操作的时候通常创建一个新的节点，让它与头节点相等，来实现遍历。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#链表创建的两种方法"><span class="nav-number">1.</span> <span class="nav-text">链表创建的两种方法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#引言"><span class="nav-number">1.1.</span> <span class="nav-text">引言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#结构体指针"><span class="nav-number">1.2.</span> <span class="nav-text">结构体指针</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#引言-1"><span class="nav-number">1.2.1.</span> <span class="nav-text">引言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#正文"><span class="nav-number">1.2.2.</span> <span class="nav-text">正文</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#头插法"><span class="nav-number">1.3.</span> <span class="nav-text">头插法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#尾插法"><span class="nav-number">1.4.</span> <span class="nav-text">尾插法</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#总结"><span class="nav-number">2.</span> <span class="nav-text">总结</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Coding Xie"
+      src="/xie0227.github.io/images/avatar.gif">
+  <p class="site-author-name" itemprop="name">Coding Xie</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/xie0227.github.io/archives/">
+        
+          <span class="site-state-item-count">1</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/xie0227" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;xie0227" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:x1105120355@gmail.com" title="E-Mail → mailto:x1105120355@gmail.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://plus.google.com/x1105120355@gmail.com" title="Google → https:&#x2F;&#x2F;plus.google.com&#x2F;x1105120355@gmail.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-google"></i></a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Coding Xie</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    <span title="站点总字数">4k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">4 分钟</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v4.2.0
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> v7.7.1
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/xie0227.github.io/lib/anime.min.js"></script>
+  <script src="/xie0227.github.io/lib/velocity/velocity.min.js"></script>
+  <script src="/xie0227.github.io/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/xie0227.github.io/js/utils.js"></script>
+
+<script src="/xie0227.github.io/js/motion.js"></script>
+
+
+<script src="/xie0227.github.io/js/schemes/pisces.js"></script>
+
+
+<script src="/xie0227.github.io/js/next-boot.js"></script>
+
+
+
+
+  
+  <script>
+    (function(){
+      var bp = document.createElement('script');
+      var curProtocol = window.location.protocol.split(':')[0];
+      bp.src = (curProtocol === 'https') ? 'https://zz.bdstatic.com/linksubmit/push.js' : 'http://push.zhanzhang.baidu.com/push.js';
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(bp, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

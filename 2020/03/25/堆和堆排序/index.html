@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/xie0227.github.io/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/xie0227.github.io/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/xie0227.github.io/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/xie0227.github.io/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/xie0227.github.io/css/main.css">
+
+
+<link rel="stylesheet" href="/xie0227.github.io/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"xie0227.github.io","root":"/xie0227.github.io/","scheme":"Gemini","version":"7.7.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="堆的结构特点堆排序是一个可以高效实现排序的算法，复杂度是O(nlogn)和之前的快速排序与归并排序的复杂度相同，而它高效的排序依赖于它的结构特点  堆是一个完全二叉树 堆中每一个节点的值都必须大于等于(或者小于等于)其子树中每个结点的值  第二点是说明每个节点都必须大于等于(或者小于等于)其左右子结点的值。 其中大于等于其左右节点的堆叫大顶堆，小于等于其左右节点的堆叫小顶堆 堆的存储结构分析由于堆">
+<meta property="og:type" content="article">
+<meta property="og:title" content="堆(一)——堆和堆排序">
+<meta property="og:url" content="https://xie0227.github.io/xie0227.github.io/2020/03/25/%E5%A0%86%E5%92%8C%E5%A0%86%E6%8E%92%E5%BA%8F/index.html">
+<meta property="og:site_name" content="小谢的博客">
+<meta property="og:description" content="堆的结构特点堆排序是一个可以高效实现排序的算法，复杂度是O(nlogn)和之前的快速排序与归并排序的复杂度相同，而它高效的排序依赖于它的结构特点  堆是一个完全二叉树 堆中每一个节点的值都必须大于等于(或者小于等于)其子树中每个结点的值  第二点是说明每个节点都必须大于等于(或者小于等于)其左右子结点的值。 其中大于等于其左右节点的堆叫大顶堆，小于等于其左右节点的堆叫小顶堆 堆的存储结构分析由于堆">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://static001.geekbang.org/resource/image/83/ce/838a38286dcace89ca63895b77ae8ece.jpg">
+<meta property="og:image" content="https://static001.geekbang.org/resource/image/e3/0e/e3744661e038e4ae570316bc862b2c0e.jpg">
+<meta property="og:image" content="https://static001.geekbang.org/resource/image/59/81/5916121b08da6fc0636edf1fc24b5a81.jpg">
+<meta property="og:image" content="https://static001.geekbang.org/resource/image/11/60/110d6f442e718f86d2a1d16095513260.jpg">
+<meta property="article:published_time" content="2020-03-25T06:34:30.000Z">
+<meta property="article:modified_time" content="2020-03-25T10:11:54.219Z">
+<meta property="article:author" content="Coding Xie">
+<meta property="article:tag" content="堆">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://static001.geekbang.org/resource/image/83/ce/838a38286dcace89ca63895b77ae8ece.jpg">
+
+<link rel="canonical" href="https://xie0227.github.io/xie0227.github.io/2020/03/25/%E5%A0%86%E5%92%8C%E5%A0%86%E6%8E%92%E5%BA%8F/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>堆(一)——堆和堆排序 | 小谢的博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <div>
+      <a href="/xie0227.github.io/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">小谢的博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">keep learnging and never give up,I will see you at a higher level</p>
+  </div>
+
+  <div class="site-nav-right"></div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/xie0227.github.io/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/xie0227.github.io/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/xie0227.github.io/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签<span class="badge">8</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/xie0227.github.io/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类<span class="badge">0</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/xie0227.github.io/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档<span class="badge">13</span></a>
+
+  </li>
+        <li class="menu-item menu-item-schedule">
+
+    <a href="/xie0227.github.io/schedule/" rel="section"><i class="fa fa-fw fa-calendar"></i>日程表</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://xie0227.github.io/xie0227.github.io/2020/03/25/%E5%A0%86%E5%92%8C%E5%A0%86%E6%8E%92%E5%BA%8F/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/xie0227.github.io/images/avatar.gif">
+      <meta itemprop="name" content="Coding Xie">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="小谢的博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          堆(一)——堆和堆排序
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2020-03-25 14:34:30 / 修改时间：18:11:54" itemprop="dateCreated datePublished" datetime="2020-03-25T14:34:30+08:00">2020-03-25</time>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>4.3k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>4 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="堆的结构特点"><a href="#堆的结构特点" class="headerlink" title="堆的结构特点"></a>堆的结构特点</h2><p>堆排序是一个可以高效实现排序的算法，复杂度是O(nlogn)和之前的快速排序与归并排序的复杂度相同，而它高效的排序依赖于它的结构特点</p>
+<ul>
+<li>堆是一个完全二叉树</li>
+<li>堆中每一个节点的值都必须大于等于(或者小于等于)其子树中每个结点的值</li>
+</ul>
+<p>第二点是说明每个节点都必须大于等于(或者小于等于)其左右子结点的值。</p>
+<p>其中大于等于其左右节点的堆叫<strong>大顶堆</strong>，小于等于其左右节点的堆叫<strong>小顶堆</strong></p>
+<h2 id="堆的存储结构分析"><a href="#堆的存储结构分析" class="headerlink" title="堆的存储结构分析"></a>堆的存储结构分析</h2><p>由于堆是一个完全二叉树，所以它可以用非常简便的<strong>数组</strong>来进行存储。</p>
+<p>数组存储的元素就是节点的值，而数组<strong>下标位置</strong>就代表着该<strong>结点在堆中的位置</strong></p>
+<img src="https://static001.geekbang.org/resource/image/83/ce/838a38286dcace89ca63895b77ae8ece.jpg" alt="img" style="zoom:50%;" />
+
+<p>由此我们可以得出一个与下面算法实现息息相关的结论</p>
+<p>如果某一个结点存储时在数组中下标为i</p>
+<ul>
+<li>它的<strong>父节点</strong>位置在i/2</li>
+<li>它的<strong>左子结点</strong>位置在2i</li>
+<li>它的<strong>右子结点</strong>位置在2i+1</li>
+</ul>
+<h2 id="堆的相关算法"><a href="#堆的相关算法" class="headerlink" title="堆的相关算法"></a>堆的相关算法</h2><h4 id="插入元素"><a href="#插入元素" class="headerlink" title="插入元素"></a>插入元素</h4><h5 id="过程思路"><a href="#过程思路" class="headerlink" title="过程思路"></a>过程思路</h5><p>在数组末尾插入元素，再判断是否符合堆的特点，即是否小于父节点，如果不小于，跟父节点交换，交换直到小于父节点。这个过程称为<strong>堆化</strong>，且是过程是<strong>自下而上</strong>的</p>
+<img src="https://static001.geekbang.org/resource/image/e3/0e/e3744661e038e4ae570316bc862b2c0e.jpg" alt="img" style="zoom: 50%;" />
+
+<h5 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h5><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">insert_node</span><span class="params">(<span class="keyword">int</span> a[],<span class="keyword">int</span> val,<span class="keyword">int</span> cnt)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> i=(cnt+<span class="number">1</span>)/<span class="number">2</span>;	<span class="comment">//也可以只用一个变量i</span></span><br><span class="line">    <span class="keyword">int</span> j = cnt+<span class="number">1</span>;</span><br><span class="line">    a[j] = val;			<span class="comment">//a[cnt+1]=val</span></span><br><span class="line">    <span class="keyword">while</span>(a[i]&lt;a[j] &amp;&amp; i&gt;<span class="number">0</span>)	<span class="comment">//    while(a[i/2]&lt;a[i] &amp;&amp; i/2&gt;0)</span></span><br><span class="line">    &#123;</span><br><span class="line">        swap(a,j,i);			<span class="comment">//swap(a,i,i/2)</span></span><br><span class="line">        i = i / <span class="number">2</span>;</span><br><span class="line">        j = j / <span class="number">2</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">swap</span><span class="params">(<span class="keyword">int</span> a[], <span class="keyword">int</span> m, <span class="keyword">int</span> i)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> temp = a[i];</span><br><span class="line">    a[i] = a[m];</span><br><span class="line">    a[m] = temp;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="删除堆顶元素"><a href="#删除堆顶元素" class="headerlink" title="删除堆顶元素"></a>删除堆顶元素</h4><h5 id="过程思路-1"><a href="#过程思路-1" class="headerlink" title="过程思路"></a>过程思路</h5><p>删除一个元素，由于堆的<strong>完全二叉树的特点</strong>限制，要提防出现最后一层断层，即不连续。</p>
+<img src="https://static001.geekbang.org/resource/image/59/81/5916121b08da6fc0636edf1fc24b5a81.jpg" alt="img" style="zoom:50%;" />
+
+<p>所以采用的方法是把<strong>最末的元素替换堆顶</strong>再进行堆化，这样得到的新堆肯定是符合其自身特点的。很明显，这里是<strong>从上往下的</strong>堆化过程。</p>
+<img src="https://static001.geekbang.org/resource/image/11/60/110d6f442e718f86d2a1d16095513260.jpg" alt="img" style="zoom:50%;" />
+
+<h5 id="代码实现-1"><a href="#代码实现-1" class="headerlink" title="代码实现"></a>代码实现</h5><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">heaping_</span><span class="params">(<span class="keyword">int</span> a[],<span class="keyword">int</span> cnt,<span class="keyword">int</span> i)</span>    <span class="comment">//一次该函数调用,可以把堆从i结点开始到堆底的全部堆化</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">while</span> (<span class="literal">true</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">int</span> maxpos = i;              </span><br><span class="line">        <span class="keyword">if</span>(a[<span class="number">2</span> * i] &gt; a[maxpos]&amp;&amp; <span class="number">2</span> * i &lt;= cnt)maxpos = <span class="number">2</span> * i;  <span class="comment">//是否左节点会大于该节点</span></span><br><span class="line">        <span class="keyword">if</span> (a[<span class="number">2</span> * i + <span class="number">1</span>] &gt; a[maxpos] &amp;&amp; <span class="number">2</span> * i &lt;= cnt)maxpos = <span class="number">2</span> * i + <span class="number">1</span>;    <span class="comment">//是否右节点会大于该节点/左节点,注意这里是maxpos不是i因为右节点可能会大于左节点,</span></span><br><span class="line">        <span class="keyword">if</span>(i==maxpos)<span class="keyword">break</span>;         <span class="comment">//如果该节点大于左节点又大于右节点,说明不需要交换堆化跳出循环,</span></span><br><span class="line">        swap(a,maxpos,i);          <span class="comment">//把三个结点中最大的那个,换到结点位置</span></span><br><span class="line">        i = maxpos;                </span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">delete_node</span><span class="params">(<span class="keyword">int</span> a[],<span class="keyword">int</span> cnt)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(cnt==<span class="number">0</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    a[<span class="number">1</span>] = a[cnt + <span class="number">1</span>];</span><br><span class="line">    cnt--;</span><br><span class="line">    heaping_(a, cnt, <span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="堆排序"><a href="#堆排序" class="headerlink" title="堆排序"></a>堆排序</h4><h5 id="过程思路-2"><a href="#过程思路-2" class="headerlink" title="过程思路"></a>过程思路</h5><p>堆排序分为两个步骤</p>
+<ul>
+<li>建堆</li>
+<li>排序</li>
+</ul>
+<p>为什么会需要建堆呢，因为排序的时候的算法利用了堆的特点，建堆是通过对已经有的数组进行堆化，使数组满足堆的特点。这里采用的是：从最后一个非叶子结点——&gt;也就是数组有效元素/2位置 开始堆化(叶子节点不需要堆化，)</p>
+<p>排序的思想是每次都将大顶堆堆顶元素放在数组末尾，再对数组里n-2个元素进行堆化，多次进行直到把倒数第二个元素进行交换，堆化。</p>
+<h5 id="代码实现-2"><a href="#代码实现-2" class="headerlink" title="代码实现"></a>代码实现</h5><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">build_heap</span><span class="params">(<span class="keyword">int</span> a[],<span class="keyword">int</span> cnt)</span>    <span class="comment">//采用的方法是从下往上依次堆化</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> i;</span><br><span class="line">    <span class="keyword">int</span> maxpos;</span><br><span class="line">    <span class="keyword">for</span> (i = cnt / <span class="number">2</span>; i&gt;<span class="number">0</span>;i--)</span><br><span class="line">    &#123;</span><br><span class="line">        heaping_(a,cnt,i);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">sort_heap</span><span class="params">(<span class="keyword">int</span> a[], <span class="keyword">int</span> cnt)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> i = cnt;</span><br><span class="line">    <span class="keyword">while</span> (i &gt; <span class="number">1</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        swap(a, <span class="number">1</span>, i);</span><br><span class="line">        i--;</span><br><span class="line">        heaping_(a, i, <span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="完整代码"><a href="#完整代码" class="headerlink" title="完整代码"></a>完整代码</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br></pre></td><td class="code"><pre><span class="line">#include &lt;stdio.h&gt;</span><br><span class="line">#include &lt;stdbool.h&gt;</span><br><span class="line">#include &lt;windows.h&gt;</span><br><span class="line">#include &lt;malloc.h&gt;</span><br><span class="line">int cnt;</span><br><span class="line">void heaping_(int a[], int cnt, int i);</span><br><span class="line">void build_heap(int a[],int cnt);       &#x2F;&#x2F;大顶堆</span><br><span class="line">void sort_heap(int a[],int );             &#x2F;&#x2F;堆排序</span><br><span class="line">void insert_node(int a[],int val,int cnt);  &#x2F;&#x2F;插入一个元素</span><br><span class="line">void delete_node(int a[],int cnt); &#x2F;&#x2F;删除堆顶元素</span><br><span class="line">void swap(int a[], int m, int n);</span><br><span class="line">void print_node(int a[],int cnt)</span><br><span class="line">&#123;</span><br><span class="line">    int i;</span><br><span class="line">    for (i &#x3D; 1; i &lt;&#x3D;cnt; i++)</span><br><span class="line">    &#123;</span><br><span class="line">        printf(&quot;%d  &quot;, a[i]);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">int main()</span><br><span class="line">&#123;</span><br><span class="line">    int cnt &#x3D; 8;</span><br><span class="line">    int heap[10] &#x3D;&#123;0,7,5,19,8,4,1,20,13&#125;;</span><br><span class="line">    build_heap(heap,cnt);</span><br><span class="line">    print_node(heap,cnt);</span><br><span class="line">    printf(&quot;\n&quot;);</span><br><span class="line">    &#x2F;&#x2F;插入</span><br><span class="line">    printf(&quot;after inserting:&quot;);</span><br><span class="line">    printf(&quot;\n&quot;);</span><br><span class="line">    insert_node(heap, 27, cnt);</span><br><span class="line">    print_node(heap, cnt);</span><br><span class="line">    &#x2F;&#x2F;删除</span><br><span class="line">    printf(&quot;\n&quot;);</span><br><span class="line">    printf(&quot;after deleting&quot;);</span><br><span class="line">    delete_node(heap, cnt);</span><br><span class="line">    cnt--;</span><br><span class="line">    printf(&quot;\n&quot;);</span><br><span class="line">    print_node(heap, cnt);</span><br><span class="line">   &#x2F;&#x2F;堆排序</span><br><span class="line">    printf(&quot;\n&quot;);</span><br><span class="line">    printf(&quot;after sorting&quot;);</span><br><span class="line">    printf(&quot;\n&quot;);</span><br><span class="line">    sort_heap(heap, cnt);</span><br><span class="line">    print_node(heap, cnt);</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">void heaping_(int a[],int cnt,int i)    &#x2F;&#x2F;一次该函数调用,可以把堆从i结点开始到堆底的全部堆化</span><br><span class="line">&#123;</span><br><span class="line">    while (true)</span><br><span class="line">    &#123;</span><br><span class="line">        int maxpos &#x3D; i;</span><br><span class="line">        if (2 * i &lt;&#x3D; cnt &amp;&amp; a[2 * i] &gt; a[i])</span><br><span class="line">            maxpos &#x3D; 2 * i;                                                 &#x2F;&#x2F;是否左节点会大于该节点</span><br><span class="line">        if (2 * i +1&lt;&#x3D; cnt &amp;&amp; a[2 * i + 1] &gt; a[maxpos])</span><br><span class="line">            maxpos &#x3D; 2 * i + 1;     &#x2F;&#x2F;是否右节点会大于该节点&#x2F;左节点,注意这里是maxpos不是i因为右节点可能会大于左节点,</span><br><span class="line">        if(i&#x3D;&#x3D;maxpos)break;         &#x2F;&#x2F;如果该节X点大于左节点又大于右节点,说明不需要交换堆化跳出循环,</span><br><span class="line">        swap(a,maxpos,i);          &#x2F;&#x2F;把三个结点中最大的那个,换到结点位置</span><br><span class="line">        i &#x3D; maxpos;                </span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">void build_heap(int a[],int cnt)    &#x2F;&#x2F;采用的方法是从下往上依次堆化</span><br><span class="line">&#123;</span><br><span class="line">    int i;</span><br><span class="line">    int maxpos;</span><br><span class="line">    for (i &#x3D; cnt &#x2F; 2; i&gt;0;i--)</span><br><span class="line">    &#123;</span><br><span class="line">        heaping_(a,cnt,i);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">void sort_heap(int a[], int cnt)</span><br><span class="line">&#123;</span><br><span class="line">    int i &#x3D; cnt;</span><br><span class="line">    while (i &gt; 1)</span><br><span class="line">    &#123;</span><br><span class="line">        swap(a, 1, i);</span><br><span class="line">        i--;</span><br><span class="line">        heaping_(a, i, 1);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">void swap(int a[], int m, int i)</span><br><span class="line">&#123;</span><br><span class="line">    int temp &#x3D; a[i];</span><br><span class="line">    a[i] &#x3D; a[m];</span><br><span class="line">    a[m] &#x3D; temp;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line">void insert_node(int a[],int val,int cnt)</span><br><span class="line">&#123;</span><br><span class="line">    int i&#x3D;cnt+1;</span><br><span class="line">    a[i] &#x3D; val;</span><br><span class="line">    while(a[i]&gt;a[i&#x2F;2] &amp;&amp; i&#x2F;2&gt;0)</span><br><span class="line">    &#123;</span><br><span class="line">        swap(a,i,i&#x2F;2);</span><br><span class="line">        i &#x3D; i &#x2F; 2;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">void delete_node(int a[],int cnt)</span><br><span class="line">&#123;</span><br><span class="line">    if(cnt&#x3D;&#x3D;0)</span><br><span class="line">    &#123;</span><br><span class="line">        return;</span><br><span class="line">    &#125;</span><br><span class="line">    a[1] &#x3D; a[cnt];</span><br><span class="line">    cnt--;</span><br><span class="line">    heaping_(a, cnt, 1);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>![](C:\Users\xie\Pictures\blog pictures\堆完整代码.png)</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><ul>
+<li>堆的存储结构是利用数组，关系是通过下标来反映</li>
+<li>堆的算法跟堆的特性和下标有很大的关系，需要从这两个点去思考编程</li>
+<li>堆化的方法分为两种，<strong>删除和建堆</strong>的自上而下堆化方法 和 <strong>插入元素</strong>自下而上的堆化方法。</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/xie0227.github.io/tags/%E5%A0%86/" rel="tag"># 堆</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/xie0227.github.io/2020/03/24/%E4%BA%8C%E5%8F%89%E6%90%9C%E7%B4%A2%E6%A0%91/" rel="prev" title="一篇搞定二叉搜索树的建立、删除、查找">
+      <i class="fa fa-chevron-left"></i> 一篇搞定二叉搜索树的建立、删除、查找
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/xie0227.github.io/2020/03/25/%E5%A0%86%E7%9A%84%E5%BA%94%E7%94%A8/" rel="next" title="堆(二)——堆的应用">
+      堆(二)——堆的应用 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#堆的结构特点"><span class="nav-number">1.</span> <span class="nav-text">堆的结构特点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#堆的存储结构分析"><span class="nav-number">2.</span> <span class="nav-text">堆的存储结构分析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#堆的相关算法"><span class="nav-number">3.</span> <span class="nav-text">堆的相关算法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#插入元素"><span class="nav-number">3.0.1.</span> <span class="nav-text">插入元素</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#过程思路"><span class="nav-number">3.0.1.1.</span> <span class="nav-text">过程思路</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#代码实现"><span class="nav-number">3.0.1.2.</span> <span class="nav-text">代码实现</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#删除堆顶元素"><span class="nav-number">3.0.2.</span> <span class="nav-text">删除堆顶元素</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#过程思路-1"><span class="nav-number">3.0.2.1.</span> <span class="nav-text">过程思路</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#代码实现-1"><span class="nav-number">3.0.2.2.</span> <span class="nav-text">代码实现</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#堆排序"><span class="nav-number">3.0.3.</span> <span class="nav-text">堆排序</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#过程思路-2"><span class="nav-number">3.0.3.1.</span> <span class="nav-text">过程思路</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#代码实现-2"><span class="nav-number">3.0.3.2.</span> <span class="nav-text">代码实现</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#完整代码"><span class="nav-number">3.0.4.</span> <span class="nav-text">完整代码</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#总结"><span class="nav-number">3.1.</span> <span class="nav-text">总结</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Coding Xie"
+      src="/xie0227.github.io/images/avatar.gif">
+  <p class="site-author-name" itemprop="name">Coding Xie</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/xie0227.github.io/archives/">
+        
+          <span class="site-state-item-count">13</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/xie0227.github.io/tags/">
+          
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/xie0227" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;xie0227" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:x1105120355@gmail.com" title="E-Mail → mailto:x1105120355@gmail.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://plus.google.com/x1105120355@gmail.com" title="Google → https:&#x2F;&#x2F;plus.google.com&#x2F;x1105120355@gmail.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-google"></i></a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Coding Xie</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    <span title="站点总字数">57k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">52 分钟</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v4.2.0
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> v7.7.1
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/xie0227.github.io/lib/anime.min.js"></script>
+  <script src="/xie0227.github.io/lib/velocity/velocity.min.js"></script>
+  <script src="/xie0227.github.io/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/xie0227.github.io/js/utils.js"></script>
+
+<script src="/xie0227.github.io/js/motion.js"></script>
+
+
+<script src="/xie0227.github.io/js/schemes/pisces.js"></script>
+
+
+<script src="/xie0227.github.io/js/next-boot.js"></script>
+
+
+
+
+  
+  <script>
+    (function(){
+      var bp = document.createElement('script');
+      var curProtocol = window.location.protocol.split(':')[0];
+      bp.src = (curProtocol === 'https') ? 'https://zz.bdstatic.com/linksubmit/push.js' : 'http://push.zhanzhang.baidu.com/push.js';
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(bp, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
